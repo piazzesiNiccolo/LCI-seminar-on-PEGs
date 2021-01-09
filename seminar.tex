@@ -38,14 +38,69 @@
     \end{frame}
     \begin{frame}
         \frametitle{Context free grammars}
-        \begin{block}{}A programming language syntax can be described using a context free grammar G.\end{block}
+        
+        \begin{block}{}We need a model to describe a language syntax.\end{block}
+        \pause
+        \begin{block}{}Classical problem, solved by using formal language theory.\end{block}
+        \pause
+        \begin{block}{}{Syntax described by a \textbf{Context Free Grammar}.}\end{block}
 
-        \begin{block}{}We want to check if the source code is actually valid code\end{block}
     \end{frame}
     \begin{frame}
-        Given the rules of grammar G, we want to find a sequence of rule applications that generates a target expression (\textbf{derivation}).
+        \frametitle{CFG: definition}
+        Context free grammar defined as:
+        \begin{center}
+            \textbf{G = (V,$\Sigma$, P, S)}
+        \end{center}
+        \begin{itemize}
+            \item V = variables
+            \item $\Sigma$ = terminals
+            \item P = productions (or rules)
+            \item S = start variables
+        \end{itemize}
+        Productions are in the form A $\rightarrow \alpha$, where A$\in$ V, $\alpha \in (V \cup \Sigma)$
 
-        Parsing is the process of discovering such sequence.
+        S $\Rightarrow$ A $|$ bb
+        
+        A $\Rightarrow$ B $|$ b 
+       
+        B $\Rightarrow$ S $|$ a
+    \end{frame}
+    \begin{frame}
+        
+            \begin{block}{}
+            Given the rules of grammar G, we want to find a sequence of productions that 
+            generates a target expression (\textbf{derivation}).
+        
+            
+            \end{block}
+            \begin{block}{}
+            Parsing is the process of discovering such sequence.
+            \end{block}
+            
+            $ S \rightarrow \gamma_{1} \rightarrow \gamma_{2} \rightarrow \dots \rightarrow \gamma_{n} \rightarrow expression$
+            
+            \begin{block}{}\textbf{Leftmost derivation}: at each step expand the leftmost non-terminal symbol\end{block}
+            
+            \begin{block}{}\textbf{Rightmost derivation}: at each step expand the rightmost non-terminal symbol\end{block}
+            
+    \end{frame}
+    \begin{frame}
+       \begin{columns}
+           \begin{column}{0.4\textwidth}
+               \begin{figure}
+                   \includegraphics[width=\textwidth]{img/cfg.png}
+                   \caption{classic grammar for arithmetic expressions}
+               \end{figure}
+           \end{column}
+           \begin{column}{0.6\textwidth}
+            \begin{figure}
+                \includegraphics[width=\textwidth]{img/parse.png}
+                \caption{parse tree for the expression x-2*y}
+            \end{figure}
+               
+           \end{column}
+       \end{columns}
     \end{frame}
     \section{Formal definiton of PEG}
     \section{A concrete example: \emph{pgen}}
