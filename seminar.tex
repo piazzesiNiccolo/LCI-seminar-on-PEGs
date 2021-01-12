@@ -7,6 +7,7 @@
     Università degli Studi di Pisa \\
     Anno Accademico 2020-21
 }
+\setbeamertemplate{bibliography item}{\insertbiblabel}
 \beamertemplatenavigationsymbolsempty
 \setbeamertemplate{footline}[page number]
 \AtBeginSection[]{
@@ -24,84 +25,14 @@
     \begin{frame}
         \maketitle
     \end{frame}
-    \section{Parsing}
-    \begin{frame}
-        \begin{block}{What's a parser?}
-            Part of the compiler.
-            Checks the stream of tokens produced by the \emph{lexer} for syntactical errors
-            and produces an IR representation (usually an abstract syntax tree) of the source 
-            that is used in later steps to generate machine code.
-        \end{block}
-        \begin{figure}
-            \includegraphics[width=\textwidth]{img/parser.jpg}
-        \end{figure}
-    \end{frame}
-    \begin{frame}
-        \frametitle{Context free grammars}
-        
-        \begin{block}{}We need a model to describe a language syntax.\end{block}
-        \pause
-        \begin{block}{}Classical problem, solved by using formal language theory.\end{block}
-        \pause
-        \begin{block}{}{Syntax described by a \textbf{Context Free Grammar}.}\end{block}
+    \include{Parsing/parsing.tex}
+    \include{PEGS/peg.tex}
+    \include{Pgen/pgen.tex}
 
+    \section{Bibliography}
+    \begin{frame}[allowframebreaks]
+        \frametitle{References}
+        \bibliographystyle{abbrv}
+        \bibliography{bib.bib}
     \end{frame}
-    \begin{frame}
-        \frametitle{CFG: definition}
-        Context free grammar defined as:
-        \begin{center}
-            \textbf{G = (V,$\Sigma$, P, S)}
-        \end{center}
-        \begin{itemize}
-            \item V = variables
-            \item $\Sigma$ = terminals
-            \item P = productions (or rules)
-            \item S = start variables
-        \end{itemize}
-        Productions are in the form A $\rightarrow \alpha$, where A$\in$ V, $\alpha \in (V \cup \Sigma)$
-
-        S $\Rightarrow$ A $|$ bb
-        
-        A $\Rightarrow$ B $|$ b 
-       
-        B $\Rightarrow$ S $|$ a
-    \end{frame}
-    \begin{frame}
-        
-            \begin{block}{}
-            Given the rules of grammar G, we want to find a sequence of productions that 
-            generates a target expression (\textbf{derivation}).
-        
-            
-            \end{block}
-            \begin{block}{}
-            Parsing is the process of discovering such sequence.
-            \end{block}
-            
-            $ S \rightarrow \gamma_{1} \rightarrow \gamma_{2} \rightarrow \dots \rightarrow \gamma_{n} \rightarrow expression$
-            
-            \begin{block}{}\textbf{Leftmost derivation}: at each step expand the leftmost non-terminal symbol\end{block}
-            
-            \begin{block}{}\textbf{Rightmost derivation}: at each step expand the rightmost non-terminal symbol\end{block}
-            
-    \end{frame}
-    \begin{frame}
-       \begin{columns}
-           \begin{column}{0.4\textwidth}
-               \begin{figure}
-                   \includegraphics[width=\textwidth]{img/cfg.png}
-                   \caption{classic grammar for arithmetic expressions}
-               \end{figure}
-           \end{column}
-           \begin{column}{0.6\textwidth}
-            \begin{figure}
-                \includegraphics[width=\textwidth]{img/parse.png}
-                \caption{parse tree for the expression x-2*y}
-            \end{figure}
-               
-           \end{column}
-       \end{columns}
-    \end{frame}
-    \section{Formal definiton of PEG}
-    \section{A concrete example: \emph{pgen}}
 \end{document}
