@@ -1,23 +1,26 @@
 \section{Parsing}
 \begin{frame}
-    \begin{block}{What's a parser?}
+	\frametitle{What is a parser?}
+    \begin{block}{}
+        
         Part of the compiler.
         Checks the stream of tokens produced by the \emph{lexer} for syntactical errors
         and produces an IR representation (usually an abstract syntax tree) of the source 
         that is used in later steps to generate machine code.
     \end{block}
     \begin{figure}
-        \includegraphics[width=\textwidth]{img/parser.jpg}
+        \includegraphics[width=\textwidth,height=.6\textheight]{img/parser.jpg}
     \end{figure}
 \end{frame}
 \begin{frame}
     \frametitle{Context free grammars}
     
-    \begin{block}{}We need a model to describe a language syntax.\end{block}
+    \begin{block}{}How do we represent the syntax of a programming language?\end{block}
     \pause
     \begin{block}{}Classical problem, solved by using formal language theory.\end{block}
     \pause
-    \begin{block}{}{Syntax described by a \textbf{Context Free Grammar}.}\end{block}
+
+    \begin{block}{}{\textbf{Regular Expressions} and \textbf{Context Free Grammars } are the main models.}\end{block}
 
 \end{frame}
 \begin{frame}
@@ -102,10 +105,13 @@
 \begin{frame}
     \frametitle{Issues}
     \begin{itemize}
+    \item Backtracking causes parsing to be exponential in time complexity
+   
     \item Left recursion
         \begin{figure}
         \includegraphics[scale=0.35 ]{img/noleftrec.png}
         \end{figure}
+
     \item Ambiguity
        \begin{center}
            \textbf{If ex1 then if ex2 then s1 else s2}

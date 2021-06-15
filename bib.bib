@@ -5,23 +5,6 @@
     url={https://www.python.org/dev/peps/pep-0617/}
     }
 
-@inproceedings{10.1145/964001.964011,
-author = {Ford, Bryan},
-title = {Parsing Expression Grammars: A Recognition-Based Syntactic Foundation},
-year = {2004},
-isbn = {158113729X},
-publisher = {Association for Computing Machinery},
-address = {New York, NY, USA},
-url = {https://doi.org/10.1145/964001.964011},
-doi = {10.1145/964001.964011},
-abstract = {For decades we have been using Chomsky's generative system of grammars, particularly context-free grammars (CFGs) and regular expressions (REs), to express the syntax of programming languages and protocols. The power of generative grammars to express ambiguity is crucial to their original purpose of modelling natural languages, but this very power makes it unnecessarily difficult both to express and to parse machine-oriented languages using CFGs. Parsing Expression Grammars (PEGs) provide an alternative, recognition-based formal foundation for describing machine-oriented syntax, which solves the ambiguity problem by not introducing ambiguity in the first place. Where CFGs express nondeterministic choice between alternatives, PEGs instead use prioritized choice. PEGs address frequently felt expressiveness limitations of CFGs and REs, simplifying syntax definitions and making it unnecessary to separate their lexical and hierarchical components. A linear-time parser can be built for any PEG, avoiding both the complexity and fickleness of LR parsers and the inefficiency of generalized CFG parsing. While PEGs provide a rich set of operators for constructing grammars, they are reducible to two minimal recognition schemas developed around 1970, TS/TDPL and gTS/GTDPL, which are here proven equivalent in effective recognition power.},
-booktitle = {Proceedings of the 31st ACM SIGPLAN-SIGACT Symposium on Principles of Programming Languages},
-pages = {111–122},
-numpages = {12},
-keywords = {GTDPL, parsing expression grammars, scannerless parsing, TDPL, unified grammars, regular expressions, BNF, lexical analysis, context-free grammars, syntactic predicates, packrat parsing},
-location = {Venice, Italy},
-series = {POPL '04}
-}
 
 @article{peg,
 author = {Ford, Bryan},
@@ -40,5 +23,15 @@ month = jan,
 pages = {111–122},
 numpages = {12},
 }
+
+@inproceedings{parr1994adding,
+	title={Adding semantic and syntactic predicates to LL (k): pred-LL (k)},
+	author={Parr, Terence J and Quong, Russell W},
+	booktitle={International Conference on Compiler Construction},
+	pages={263--277},
+	year={1994},
+	organization={Springer}
+}
+
 
 

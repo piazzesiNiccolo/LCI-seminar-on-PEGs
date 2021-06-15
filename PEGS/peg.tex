@@ -1,4 +1,252 @@
-\section{PEG: Definition and main features}
+\section{Parsing Expression Grammars: Definition and main features}
+
 \begin{frame}
-    \frametitle{Formal definition \cite{peg}}
+	\frametitle{Concrete definition}
+	\textbf{Introduced by Bryan Ford in 2004 \cite{peg}.}
+	
+   \textbf{An alternative, recognition based, formal foundation for language syntax.}
+   
+   \textbf{Similar approach to EBNF notation, where a CFG is enriched with RE-like  features.}
+   
+\end{frame}
+
+\begin{frame}
+	\frametitle{A key difference}
+	\begin{minipage}{\textwidth}
+		The nondeterministic choice operator  '$|$' is substituted by a \emph{prioritized} choice operator '/'. 
+	\end{minipage}
+\vfill
+%&
+	\begin{minipage}{\textwidth}
+	\begin{columns}
+		\column{0.5\textwidth}
+		\centering
+		A  $\rightarrow$ ab $|$ a 
+		
+		$\Updownarrow$
+		
+		A $\rightarrow$ a $|$ ab
+		\column{0.5\textwidth}
+		\centering
+		A  $\leftarrow$ ab $/$ a 
+		
+		$\not\Updownarrow$
+		
+		A $\leftarrow$ a $/$ ab
+		
+	\end{columns}
+			
+
+	\end{minipage}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Operators}
+	\begin{columns}
+	\column{0.5\textwidth}
+	A parsing expression grammar consists of a set of definition of the form 'A $\leftarrow e $', where A is a nonterminal and $e$ is a \emph{parsing expression}.
+	
+	 A parsing expression can be constructed using the operators defined in Table \ref{tab:op}.
+	\column{0.5\textwidth}
+	\begin{table}
+		\footnotesize
+		\resizebox{\columnwidth}{!}{%
+		\begin{tabular}{|c c c c|}
+			\hline
+			Operator &  Type & Precedence & Description\\
+			\hline
+			'        '	& Primary & 5 & Literal String \\ 
+			"     "		& Primary & 5 & Literal String \\ 
+			$\lbrack$  $\rbrack$			& Primary & 5 & Character class \\
+			. 			& Primary  & 5 & Any character \\
+			(e) 	& Primary & 5 & Grouping \\
+			e? 		& Unary suffix & 4 & Optional \\
+			e* 		& Unary suffix & 4 & Zero or more \\
+			e+		& Unary suffix & 4 & One or more \\
+			\&e  	& Unary prefix & 3 & And-predicate\\
+			!e 			& Unary prefix & 3 & Not-predicate \\
+			e1 e2	& Binary	& 2	&  Sequence \\
+			e1 $/$ e2	& Binary	& 1	&  Prioritized choice\\
+			\hline
+	\end{tabular}}
+	\caption{Operators for constructing parsing expression }
+	\label{tab:op}
+	\end{table}
+\end{columns}
+\end{frame}
+\begin{frame}
+	'   ' and " " delimit string literals, while [ ]
+ indicate characters classes, which can also be specified using ranges  such as 'a-z' . The ' . ' constant matches any character.
+
+
+?, * and + work as in normal regular expression, but they are greedy instead of non deterministic.
+
+
+\& and ! are \emph{syntactic predicates\footnote{See \cite{parr1994adding}}.}  The expression '\&$e$ tries to match the given pattern and then unconditionally backtracks to the starting point, mantaining the knowledge of wether \emph{e} succeded or failed. '!\emph{e}' succeed if \emph{e} fails and viceversa. These two operators are fundamental for the expressive power of Parsing Expression Grammars, allowing them to describe languages that are not even parsed using CFGs (e.g $a^nb^nc^n$).
+\end{frame}
+\begin{frame}
+	\frametitle{Peg describing its own ASCII syntax}
+	\begin{minipage}{\textwidth}
+		\begin{flushleft}Hierarchical syntax\end{flushleft}
+\begin{columns}
+		
+		\column{0.5\textwidth}
+		\tiny
+	
+		
+		Grammar $\leftarrow$ Space Def+ EOF
+		
+		Def $\leftarrow$ LArrow Expr
+		
+		Expr  $\leftarrow$ Seq (Slash Seq)*
+		
+		Seq $\leftarrow$ Prefix*
+		\column{0.5\textwidth}
+		\tiny
+		Prefix $\leftarrow$ (And / Not )? Suffix
+		
+		Suffix $\leftarrow$ Primary (Question / Star / Plus)?
+		
+		Primary $\leftarrow$ Identifier !LArrow  
+												
+												\textbf{/} Open  Expr Close
+												
+												\textbf{/}  Literal
+												
+												\textbf{/} Class
+												 \textbf{/} Dot
+		\end{columns}
+		\end{minipage}
+		\vfill
+		%&
+		\begin{minipage}{\textwidth}
+			\begin{flushleft}Lexical syntax\end{flushleft}
+			\tiny
+		\begin{columns}
+		\column{0.5\textwidth}
+	
+		Identifier $\leftarrow$ Istart Icont* Space
+		
+		Istart $\leftarrow$ [a-zA-Z\_]
+		
+		Icont $\leftarrow$ Istart / [0-9]
+		
+		Literal  $\leftarrow$ ['](!['] Char)* ['] Space
+		
+		\textbf{/} ["](!["] Char)* ["] Space
+		
+		Class $\leftarrow$ '[' (!'[' Range)* ']' Space
+		
+		Range $\leftarrow$ Char '-' Char 
+		
+		\textbf{/} Char
+		
+		Char $\leftarrow$ ' $\backslash\backslash$' [nrt'"$\backslash$ [ $\backslash$ ] $\backslash\backslash$ ]
+		
+		\textbf{/} '$\backslash\backslash$' [0-2][0-7][0-7] 
+		
+		\textbf{/}  '$\backslash\backslash$' [0-2][0-7]?
+		
+		\textbf{/}	!  '$\backslash\backslash$'
+
+	\column{0.5\textwidth}
+		\tiny
+		Larrow $\leftarrow$ '<-' Space
+		
+		Slash $\leftarrow$ '/ ' Space
+		
+		And $\leftarrow$ '\&' Space
+		
+		Not $\leftarrow$ '!' Space
+		
+		Question $\leftarrow$ '?' Space
+		
+		Star $\leftarrow$ '*' Space
+		
+		Plus $\leftarrow$ '+' Space
+		
+		Open $\leftarrow$ '(' Space
+		
+		Close $\leftarrow$ ')' Space
+		
+		Dot $\leftarrow$ '.' Space
+		
+		Space $\leftarrow$ (Ws /  Comment)*
+		
+		Comment $\leftarrow$ '\#' (!EOL .)* EOL
+		
+		Space $\leftarrow$ '  ' \textbf{/}	'$\backslash$t' \textbf{/}
+		
+		EOL $\leftarrow$ '$\backslash$r$\backslash$n' \textbf{/} '$\backslash$n' \textbf{/} '$\backslash$r'
+		
+		EOF $\leftarrow$ ! .
+		
+		
+			
+\end{columns}
+\end{minipage}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Unified language definition}
+	
+\begin{block}{}	The large majority of syntax description uses a context free grammar to specify the hierarchical structure and a set of regular expressions that specify the individual lexical elements.
+
+\end{block}
+\begin{block}{}
+	Context Free Grammars cannot express all idioms, such as the greedy rule for identifiers and numbers, or "negative" syntax to described quoted string literals. 
+\end{block}
+\begin{block}{}
+	Regular Expressions cannot describe recursive syntax.
+\end{block}
+\begin{block}{}
+		Using both allows us to surpass these limitations.
+\end{block}
+\end{frame}
+\begin{frame}
+	\begin{block}{}
+			As demonstrated by the previous example, these issues are non existent in PEGs, thanks to its operators. 
+	\end{block}
+	\begin{block}{}
+		The greedy nature of the repetition operator ensures that a sequence of letters is always interpreted as a single identifier.  Negative syntax can be described thanks to the ! operators, as seen in the Char or Class definitions. 
+	\end{block}
+\begin{block}{}
+	Lexical elements definition can refer to the hierarchical portion of the syntax
+	\begin{center}
+		\footnotesize
+		Comment $\leftarrow$  ' (* '    ( Comment /  !  ’ *) ’   . )*        ’*)’
+	\end{center}
+\end{block}
+\begin{block}{}
+	This allows us to use a single, unified model to concisely express a machine-oriented language.
+\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Handling ambiguity}
+
+	\begin{block}{}
+	 Ambiguity is usually resolved in CFGs by using informal meta-rules (e.g, for the dangling else problems, we assume that an if without else is prioritized)
+\end{block} 
+	 \begin{block}{}
+	 	Thanks to prioritized choice, repetition operators and syntactic predicates, many ambiguities can  be entirely avoided in PEGs
+	 \end{block}
+ 	\begin{center}
+ 		Statement $\leftarrow$ IF Cond THEN  Statement ELSE Statement 
+ 		
+ 		/	IF Cond THEN Statement  / 	$\dots$	
+ 	\end{center}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Limitations}
+	\begin{block}{}
+		Left recursion is still unavailable in PEGs. Because of the enforced priority,  a rule such as 
+		\begin{center}A $\leftarrow$ A a / a\end{center}
+		causes an infinite loop (can be avoided using repetition operators).
+		
+	\end{block}
+	\begin{block}{}
+		A parsing expression grammar is still a purely syntactic formalism. As such, it cannot fully express languages whose syntax depends on semantics predicates (e.g typedef identifiers in C) .  
+	\end{block}
 \end{frame}
