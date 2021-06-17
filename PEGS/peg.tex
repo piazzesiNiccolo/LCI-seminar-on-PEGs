@@ -1,4 +1,4 @@
-\section{Parsing Expression Grammars: Definition and main features}
+\section{Parsing Expression Grammars: an introduction}
 
 \begin{frame}
 	\frametitle{Concrete definition}
@@ -200,12 +200,12 @@
 	Regular Expressions cannot describe recursive syntax.
 \end{block}
 \begin{block}{}
-		Using both allows us to surpass these limitations.
+		Using both allows us to surpass the limitations.
 \end{block}
 \end{frame}
 \begin{frame}
 	\begin{block}{}
-			As demonstrated by the previous example, these issues are non existent in PEGs, thanks to its operators. 
+			These issues are non existent in PEGs, thanks to its operators. 
 	\end{block}
 	\begin{block}{}
 		The greedy nature of the repetition operator ensures that a sequence of letters is always interpreted as a single identifier.  Negative syntax can be described thanks to the ! operators, as seen in the Char or Class definitions. 
@@ -249,4 +249,194 @@
 	\begin{block}{}
 		A parsing expression grammar is still a purely syntactic formalism. As such, it cannot fully express languages whose syntax depends on semantics predicates (e.g typedef identifiers in C) .  
 	\end{block}
+\end{frame}
+
+\section{Formal analysis of PEGs}
+
+\begin{frame}
+	\begin{block}{}The definition of PEGs that we saw is very concrete and implementation oriented.\end{block}
+	
+	\begin{block}{}To reason about grammar and languages properties. we need to abstract way from the  unessential details and retain only the basic structure.\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Formal definition}
+	\emph{Parsing Expression Grammar}
+	
+	\begin{center}
+		G = $(V_n,V_t,R, e_S)$
+	\end{center}
+
+\begin{itemize}
+	\item $V_n$ set of nonterminal symbols
+	\item $V_t$ set of terminal symbols
+	\item $R$ finite set of rules 
+	\item $e_S$ the \emph{start expression}
+\end{itemize}
+
+$V_n \cap V_t = \emptyset$
+
+
+\end{frame}
+\begin{frame}
+	$r \in R$ is a pair $(A,e)$, written $A \leftarrow e$, where $A \in V_n$ and $e$ is a parsing expression
+	
+	R is a function, meaning that for any nonterminal $A \in V_t$ there is one and only one $e$ such that $A \leftarrow e \in R$. We identify with $R(A)$ the  expression $e$ associated with A.
+	
+	R being functional prevents expression from containing undefined references or subroutine failures.
+\end{frame}
+\begin{frame}
+	Parsing expression are defined inductively. 
+	
+	It is a parsing expression:
+	\begin{itemize}
+		\item The empty string $\epsilon$. 
+		\item Any terminal $a \in V_t$.
+		\item Any non terminal $A \in V_n$.
+		\item The sequence $e1e2$, if $e_1$ and $e_2$ are parsing expression.
+		\item The choice $e1/e2$, if $e_1$ and $e_2$ are parsing expression.
+		\item The repetition $e^*$, if  e is a parsing expression.
+		\item The not-predicate $!e$, if $e$ is a parsing expression.
+	\end{itemize}
+\begin{block}{}
+	E(G):  a set  containing $e_S$, the expressions used in R and all their subexpressions.
+\end{block}
+\end{frame}
+
+\begin{frame}
+	\begin{block}{}
+		\textbf{Repetition free grammar}: grammar where no expression contains the * operator.
+		
+	\end{block}
+
+	\begin{block}{}
+		\textbf{Predicate free grammar}: grammar where no expression contains the ! operator.
+		
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Desugaring operators}
+	The abstract syntax does not define  ' . ', ' + ', ' ? , ' \& ' and character classes.
+	These constructs are desugared with the following rules:\begin{itemize}
+		\item . $\rightarrow$ [a] $\forall a \in V_T$.
+		\item $[a_1,a_2, ... , a_n] \rightarrow a_1 / a_2 / ... / a_n$.
+		\item  	$e? \rightarrow e_d / \epsilon$  where $e_d$ is the desugaring of $e$.
+		\item $ e^+ \rightarrow e_de_d^*$.
+		\item $\&e \rightarrow !(!e)$.
+\end{itemize} 
+\end{frame}
+\begin{frame}
+	
+	\frametitle{Grammar interpretation}
+	We formalize the meaning of a grammar G defining the relation $\Rightarrow_G$.
+	
+	$\Rightarrow_G$ goes from pairs $(e,x)$ to pairs $(n,o)$, where $e$ is a parsing expression, $x \in V_t^*$ is an input string, $n \geq 0$ is a "step counter"  and $ o \in V_T^* \cup {f}$ is the result of a recognition  attempt (f represents a failure). 
+	
+	$\Rightarrow_G$ defined inductively.
+\end{frame}
+\begin{frame}
+	\scriptsize
+	\begin{columns}
+		\column{0.5\textwidth}
+		\begin{itemize}
+		\item $(\epsilon, x) \Rightarrow  (1,\epsilon) \forall x \in V_t^*$.
+		
+		\item $(a,ax) \Rightarrow (1, a)$ if $A \in V_t,x \in V_t^*$.
+		
+		\item  $(a,bx) \Rightarrow (1, f) $if $ a \neq b$ and $(a, \epsilon) \Rightarrow (1,f)$.
+		
+		\item  $(A,x) \Rightarrow (n+1,o)$ if $A \Rightarrow e \in R$ and $(e,x) \Rightarrow (n,o)$.
+		
+		\item If $(e_1,x_1x_2y) \Rightarrow (n_1, x_1)$ and $(e_2,x_2y) \Rightarrow (n_2,x_2)$, then 
+	$(e_1e_2,x_1x_2y) \Rightarrow (n_1+n_2+1,x_1x_2)$.
+		
+		\item If $(e_1, x) \Rightarrow (n_1, f)$, then $(e_1e_2,x) \Rightarrow (n_1+1,f)$
+		
+		\item If $(e_1,x_1y) \Rightarrow (n_1, x_1)$ and $(e_2, y) \Rightarrow (n_2, f)$, then $(e_1e_2, x_1y) \Rightarrow (n_1 + n_2 + 1, f)$
+		\end{itemize}
+	
+	\column{0.5\textwidth}
+	\begin{itemize}
+			
+		
+		\item If $(e_1,xy) \Rightarrow (n_1,x)$, then $(e_1 / e_2, xy) \Rightarrow (n_1,x)$.
+		
+		\item If $(e_1,x) \Rightarrow (n_1,f)$ and $(e_2,x) \Rightarrow (n_2,o)$, then $(e_1 / e_2, x) \Rightarrow (n_1 + n_2 +1,o)$.
+		
+		\item If $(e,x_1x_2y) \Rightarrow (n_1,x_1)$ and $(e^*,x_2y) \Rightarrow (n_2,x_2)$, then $(e^*,x_1x_2y) \Rightarrow (n_1 + n_2 + 1, x_1x_2)$.
+		
+		\item  If $(e, x) \Rightarrow (n_1, f)$, then  $(e^*, x) \Rightarrow (n_1 + 1, \epsilon)$.
+		
+		\item If $(e, xy) \Rightarrow (n, x)$, then $(!e, xy) \Rightarrow (n+1, f)$
+		
+		\item If $(e, x) \Rightarrow (n, f)$, then $(!e, x) \Rightarrow (n+1, f)$.
+	\end{itemize}
+	\end{columns}
+\end{frame}
+
+\begin{frame}
+	\small
+	\frametitle{Languages and grammars properties}
+	\begin{block}{}
+		\emph{A language L is a parsing expression language (PEL) iff there exists a parsing expression grammar  G whose language is L}. 
+	\end{block}
+\begin{block}{Theorem}
+	The class of parsing expression languages is close dunder intersection, union, and complement
+\end{block}
+\begin{block}{Proof}
+
+Suppose that we  have $G_1 = (V_N^1,V_T, R^1,e_S^1)$, $G_2 = (V_N^2,V_T, R^2,e_S^2)$ that recognizes $L(G_1)$ and $L(G_2)$. Assuming that $V_N^1 \cap V_N^2 = \emptyset$, we define the grammar $G=(V_N^1 \cup V_N^2, V_T,R^1 \cup R_2, e_S')$ where $e_S'$ is one of the following:\begin{itemize}
+	\item If $e_S' = e_S^1 / e_S^2$, then $L(G) = L(G_1) \cup L(G_2)$
+	
+	\item If $e_S' = \&e_S^1e_S^2$, then $L(G) = L(G_1) \cap L(G_2)$
+	
+	\item If $e_S' = !e_S^1$, then $L(G) = V_T^* - L(G_1)$
+\end{itemize}
+	
+\end{block}
+\end{frame}
+
+\begin{frame}
+
+	\small
+	
+
+	\begin{block}{}
+	The class of parsing expression  includes non context-free languages. As an example, the language $a^nb^nc^n$ can be recognized using a PEG $G = ({A,B,D},{a,b,c},R,D)$ where R is composed by the following rules:
+	\begin{align*}
+		A  &\leftarrow  a A b / \epsilon \\
+		B &\leftarrow bBc / \epsilon \\
+		D &\leftarrow\&(A !b)a^*B!.
+	\end{align*}
+	\end{block}
+		\begin{block}{}
+		It is undecidable whether the language L(G) of an arbitrary grammar G is empty. Because of this, it is also undecidable the problem of knowing if a grammar G is complete.
+	\end{block}
+	\begin{block}{}
+		We call a grammar \emph{well formed} if it does not have left recursive rules.
+	\end{block}
+\end{frame}
+
+
+\begin{frame}
+
+	
+	$e_1(e_2e_3) \asymp (e_1e_2)e_3$\hfill $e_1(e_2 / e_3) \asymp (e_1 / e_2)e_3$
+		
+		
+		
+		$e_1(e_2 / e_3) \asymp (e_1/ e_2) / (e_1e_3)$  	\hfill $e_1(e_2 / e_3) \not\asymp (e_1/ e_3) / (e_2e_3)$
+		
+	
+
+		
+	$ e_1!e_2 \asymp   !(e_1e_2)e_1$ \hfill
+	
+	  $e_1$ and $e_2$ are disjoint if they succeed on disjoint sets of input strings.
+	
+	$e_1 / e_2 \asymp  e_2 / e_1$ if  $e_1$ and $e_2$ are disjoint.
+	
+
+	
 \end{frame}
