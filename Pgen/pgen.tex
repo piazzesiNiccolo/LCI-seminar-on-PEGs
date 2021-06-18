@@ -1,4 +1,90 @@
 \section{A use case: \emph{pgen}}
 \begin{frame}
-    python \cite{python}
+    While being a relatively new subject, parsing expression grammars have recently proved their  power in concrete parsers implementation.
+    
+    \begin{block}{}
+    	In PEP 617 \cite{python}, CPython creator and mantainer Guido Van Rossum announced the proposal of replacing the old python parser generator, named pgen, with a new PEG parser generator.
+    \end{block}
+	\begin{block}{}
+		The proposal has been accepted, and the new module has been introduced in python 3.9. The old parser will still be the main Python parser until version 3.10, where it will be completely replaced.
+	\end{block}
+\end{frame}
+
+\begin{frame}[fragile]
+	\small
+	\frametitle{Python parser: an overview}
+	Despite technically being LL(1), the Python grammar have several rules that are not LL(1), requiring several workarounds to be used in the grammar and other parts of CPython.  
+
+		Sometimes the problem is not solvable with any workaround. As an example, no LL(1) rule can be made to support writing multiline parenthesized context managers:
+		\begin{minted}{Python}
+		with(
+		open("a") as a,
+		open("b") as b,
+		open("c") as c,
+		)
+		\end{minted}
+
+Since open parenthesis are in the first sets of grammar items that can appear as context managers, the rule would be ambigous.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Other issues}
+	\begin{itemize}
+		\item Huge coupling between AST generation routines and the shape of the resulting tree. Many actions are directly tied to the implicit structure of the ast, making the code more complex and implementation dependent.
+		\item No left recursion allowed, since the grammar is LL(1).
+		
+		\item The current parser does not directly generate the AST. It instead creates a Concrete Syntax Tree, which is then  transformed to an abstract one. This structure is not used by anything else and it requires to be kept entirely in memory, heavily  increasing space consumption.
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{The proposal}
+	The new proposed PEG parser is divided in three components:\begin{enumerate}
+		\item A parser generator. It reads  a grammar file and produces a PEG parser written in Python or C.
+		
+		\item A PEG meta-grammar that auto generates a Python parser used for the parser generator itself
+		\item A generated parser that produces C and Python AST objects.
+	\end{enumerate} 
+\end{frame}
+\begin{frame}
+	\frametitle{Features}
+	
+	\begin{block}{Left recursion}
+		While PEG parsers normally do not support it, the proposed parser can handle both direct and indirect left recursion, thanks to a memoization cache.
+	\end{block}
+
+	\begin{block}{Syntax}
+		The syntax is quite similar to the one that we saw. For simplicity the left arrow $\leftarrow$ is replaced by ' : ' and the choice operator reuses the symbol ' $|$ '.
+	\end{block}
+
+	\begin{block}{Grammar actions}
+		The proposed PEG parser is able to directly generate AST nodes  for a rule via grammar actions, which are language specific expressions evaluated when a rule is successfully parsed. This removes the need for an intermediate CST, freeing up space.
+	\end{block}
+
+
+\end{frame}
+\begin{frame}
+\frametitle{Performance}
+
+During testing, it has been shown that the new parser comes within the performance of the old one up to 10\%, both in time and space consumption.
+
+While the packrat parsing algorithm requires more space of the normal LL(1) parser to store intermediate results, this is balanced by not having to build the intermediate CST.
+
+It has been found that the new parser is slightly faster, but uses around 10\% more memory. 
+\end{frame}
+
+\begin{frame}[fragile]
+	\huge
+	
+	Thanks for your attention!
+	
+	\large 
+	\begin{minted}{bash}
+>>> __peg_parser__
+File "<stdin>", line 1
+__peg_parser__
+^
+SyntaxError: You found it!
+\end{minted}
+
 \end{frame}

@@ -1,6 +1,13 @@
 \documentclass{beamer}
 \usetheme{metropolis}
-
+\usepackage{babel}
+\usepackage{url}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{authblk}
+\usepackage{minted}
 \usepackage{amsmath}
 \title{Parsing Expression Grammars}
 \author{Niccolò Piazzesi}
@@ -28,14 +35,14 @@
     \end{frame}
     \include{Parsing/parsing.tex}
     \include{PEGS/peg.tex}
-    \include{Pgen/pgen.tex}
+    \input{Pgen/pgen.tex}
+	
 
-    \section{Bibliography}
-     \nocite{peg}
+
     \begin{frame}[allowframebreaks]
      
         \frametitle{References}
-        \bibliographystyle{abbrv}
+        \bibliographystyle{unsrt}
         \bibliography{bib.bib}
     \end{frame}
 \end{document}
