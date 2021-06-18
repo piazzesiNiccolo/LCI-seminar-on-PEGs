@@ -403,7 +403,7 @@ Suppose that we  have $G_1 = (V_N^1,V_T, R^1,e_S^1)$, $G_2 = (V_N^2,V_T, R^2,e_S
 	
 
 	\begin{block}{}
-	The class of parsing expression  includes non context-free languages. As an example, the language $a^nb^nc^n$ can be recognized using a PEG $G = ({A,B,D},{a,b,c},R,D)$ where R is composed by the following rules:
+	The class of parsing expression  includes non context-free languages. As an example, the language $a^nb^nc^n$ can be recognized using a PEG $G = (\{A,B,D\},\{a,b,c\},R,D)$ where R is composed by the following rules:
 	\begin{align*}
 		A  &\leftarrow  a A b / \epsilon \\
 		B &\leftarrow bBc / \epsilon \\
@@ -420,7 +420,7 @@ Suppose that we  have $G_1 = (V_N^1,V_T, R^1,e_S^1)$, $G_2 = (V_N^2,V_T, R^2,e_S
 
 
 \begin{frame}
-
+\frametitle{Grammar identities}
 	
 	$e_1(e_2e_3) \asymp (e_1e_2)e_3$\hfill $e_1(e_2 / e_3) \asymp (e_1 / e_2)e_3$
 		
@@ -439,4 +439,83 @@ Suppose that we  have $G_1 = (V_N^1,V_T, R^1,e_S^1)$, $G_2 = (V_N^2,V_T, R^2,e_S
 	
 
 	
+\end{frame}
+
+\begin{frame}
+	\frametitle{PEGs reductions}
+	PEGs can be reduced to simpler forms, which may be more useful to implement and easier to reasonate about.
+	
+	\begin{block}{Eliminating repetition operators}
+		Any repetition expression $e^*$ can be  replaced with a new  nonterminal A  with the definition $A \leftarrow eA / \epsilon$. This new rule must be right recursive.
+	\end{block} 
+	\begin{block}{Eliminating predicates}
+		It is possible to remove all predicate operators from a well formed PEG. The procedure goes beyond the scope of this seminar so we will not see it, but it is shown by Ford in the original paper \cite{peg}.
+	\end{block}
+\end{frame}
+
+\begin{frame}
+\frametitle{Reduction to TDPL }
+Any predicate free PEG can be reduced  to a restricted system introduced by Birman in 1970 \cite{birman1970tmg} and renamed "Top Down Parsing Language (TPDL)" by Aho and Ullman \cite{10.5555/578789}.
+
+\begin{block}{}
+	TPDL can be seen as the PEG equivalent of CNF for context free grammars.  A TDPL grammar is  a PEG $G=(V_N,V_T,R,S)$ where  $S \in V_N$ and the rules in R can have only the following form:
+	\begin{enumerate}
+		\item $A \leftarrow \epsilon$
+		\item $A \leftarrow a$, where $a \in V_T$.
+		\item $A \leftarrow f$, where $f \equiv !\epsilon$.
+		\item $A \leftarrow BC / D$, where B, C, D $\in V_N$.
+	\end{enumerate}
+\end{block}
+\end{frame}
+
+\begin{frame}
+	Any predicate-free PEG $G = (V_N,V_T,R,e_S)$ can be reduced  to an equivalent TDPL $G' = (V_N',V_T,R',S)$.
+	
+	\begin{block}{}
+		We first add the nonterminal S and the rule $S \leftarrow e_S$. Then we add two nonterminals E and F and their rules $E \leftarrow \epsilon$ and $F \leftarrow f$. Finally we rewrite the non-TDPL rules in the following way:\begin{itemize}
+			\item $A \leftarrow B \longmapsto  A \leftarrow BE / F$
+			\item $A \leftarrow e_1e_2$ $\longmapsto A \leftarrow BC / F$, $ B \leftarrow e_1$, $C \leftarrow e_2$.
+			\item $A \leftarrow e_1/e_2$ $\longmapsto A \leftarrow BE/ C$, $ B \leftarrow e_1$, $C \leftarrow e_2$.
+			\item $A \leftarrow e^*$ $\longmapsto A \leftarrow BA/ E$, $ B \leftarrow e$.
+		\end{itemize}
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Reduction to GTDPL }
+	Similar reasoning can be applied to reduce a PEG to a "Generalized Top Down Parsing Language (GTDPL), which utilizes slighlty different rules that essentially provides the functionality of predicates in PEGs.
+	
+	\begin{block}{}
+			\begin{enumerate}
+			\item $A \leftarrow \epsilon$
+			\item $A \leftarrow a$, where $a \in V_T$.
+			\item $A \leftarrow f$, where $f \equiv !\epsilon$.
+			\item $A \leftarrow B[C,D]$, where $B[C,D] \equiv BC / !BD$, and  B, C, D $\in V_N$.
+		\end{enumerate}
+	\end{block}
+\end{frame}
+
+\begin{frame}
+	Any predicate-free PEG $G = (V_N,V_T,R,e_S)$ can be reduced  to an equivalent TDPL $G' = (V_N',V_T,R',S)$.
+	
+	\begin{block}{}
+		We first add the definitions $S \leftarrow e_S$, $E \leftarrow \epsilon$ and $F \leftarrow f$. We rewrite the non-GTDPL rules in the following way:\begin{itemize}
+			\item $A \leftarrow B \longmapsto  A \leftarrow B[E, F]$
+			\item $A \leftarrow e_1e_2$ $\longmapsto A \leftarrow B[C, F]$, $ B \leftarrow e_1$, $C \leftarrow e_2$.
+			\item $A \leftarrow e_1/e_2$ $\longmapsto A \leftarrow B[E, C]$, $ B \leftarrow e_1$, $C \leftarrow e_2$.
+			\item $A \leftarrow e^*$ $\longmapsto A \leftarrow B[A, E]$, $ B \leftarrow e$.
+			\item $A \leftarrow !e$ $\longmapsto A \leftarrow B[F, E]$, $ B \leftarrow e$.
+		\end{itemize}
+	\end{block}
+
+	Any well formed GTDPL  grammar that does not accept the empty string  can be reduced to an equivalent TDPL grammar.
+\end{frame}
+
+\begin{frame}
+	\frametitle{Parsing PEGs}
+These reductions allows  use the tabular parsing technique described by Aho and Ullman \cite{10.5555/578789}, meaning that we can construct a linear time parser for any given PEG.
+	
+	\begin{block}{}
+		 The tabular parsing technique has been extended and improved by Ford to produce what is called \emph{packrat parsing}\cite{ford2002packrat}. It essentially can be seen as a dynamic programming version of normal top down parsing with backtracking. The major difference is that intermediate results are stored in a table, so we can lazily reuse them when needed. It makes top down parsing linear in time at the cost of using more space.
+	\end{block}
 \end{frame}
