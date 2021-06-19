@@ -82,7 +82,7 @@
 ?, * and + work as in normal regular expression, but they are greedy instead of non deterministic.
 
 
-\& and ! are \emph{syntactic predicates\footnote{See \cite{parr1994adding}}.}  The expression '\&$e$ tries to match the given pattern and then unconditionally backtracks to the starting point, mantaining the knowledge of wether \emph{e} succeded or failed. '!\emph{e}' succeed if \emph{e} fails and viceversa. These two operators are fundamental for the expressive power of Parsing Expression Grammars, allowing them to describe languages that are not even parsed using CFGs (e.g $a^nb^nc^n$).
+\& and ! are \emph{syntactic predicates\footnote{See \cite{parr1994adding}}.}  The expression '\&$e$ tries to match the given pattern and then unconditionally backtracks to the starting point, mantaining the knowledge of wether \emph{e} succeded or failed without consuming any input. '!\emph{e}' succeed if \emph{e} fails and viceversa. These two operators are fundamental for the expressive power of Parsing Expression Grammars, allowing them to describe languages that are not even parsed using CFGs (e.g $a^nb^nc^n$).
 \end{frame}
 \begin{frame}
 	\frametitle{Peg describing its own ASCII syntax}
@@ -151,7 +151,7 @@
 
 	\column{0.5\textwidth}
 		\tiny
-		Larrow $\leftarrow$ '<-' Space
+		Larrow $\leftarrow$ '$\leftarrow$' Space
 		
 		Slash $\leftarrow$ '/ ' Space
 		
@@ -256,7 +256,7 @@
 \begin{frame}
 	\begin{block}{}The definition of PEGs that we saw is very concrete and implementation oriented.\end{block}
 	
-	\begin{block}{}To reason about grammar and languages properties. we need to abstract way from the  unessential details and retain only the basic structure.\end{block}
+	\begin{block}{}To reason about grammar and languages properties, we need to abstract way from the  unessential details and retain only the basic structure.\end{block}
 \end{frame}
 
 \begin{frame}
@@ -382,11 +382,11 @@ $V_n \cap V_t = \emptyset$
 		\emph{A language L is a parsing expression language (PEL) iff there exists a parsing expression grammar  G whose language is L}. 
 	\end{block}
 \begin{block}{Theorem}
-	The class of parsing expression languages is close dunder intersection, union, and complement
+	The class of parsing expression languages is closed under intersection, union, and complement.
 \end{block}
 \begin{block}{Proof}
 
-Suppose that we  have $G_1 = (V_N^1,V_T, R^1,e_S^1)$, $G_2 = (V_N^2,V_T, R^2,e_S^2)$ that recognizes $L(G_1)$ and $L(G_2)$. Assuming that $V_N^1 \cap V_N^2 = \emptyset$, we define the grammar $G=(V_N^1 \cup V_N^2, V_T,R^1 \cup R_2, e_S')$ where $e_S'$ is one of the following:\begin{itemize}
+Suppose that we  have $G_1 = (V_N^1,V_T, R^1,e_S^1)$, $G_2 = (V_N^2,V_T, R^2,e_S^2)$ that recognizes $L(G_1)$ and $L(G_2)$. Assuming that $V_N^1 \cap V_N^2 = \emptyset$, we define the grammar $G=(V_N^1 \cup V_N^2, V_T,R^1 \cup R^2, e_S')$ where $e_S'$ is one of the following:\begin{itemize}
 	\item If $e_S' = e_S^1 / e_S^2$, then $L(G) = L(G_1) \cup L(G_2)$
 	
 	\item If $e_S' = \&e_S^1e_S^2$, then $L(G) = L(G_1) \cap L(G_2)$
@@ -516,6 +516,6 @@ Any predicate free PEG can be reduced  to a restricted system introduced by Birm
 These reductions allows  use the tabular parsing technique described by Aho and Ullman \cite{10.5555/578789}, meaning that we can construct a linear time parser for any given PEG.
 	
 	\begin{block}{}
-		 The tabular parsing technique has been extended and improved by Ford to produce what is called \emph{packrat parsing}\cite{ford2002packrat}. It essentially can be seen as a dynamic programming version of normal top down parsing with backtracking. The major difference is that intermediate results are stored in a table, so we can lazily reuse them when needed. It makes top down parsing linear in time at the cost of using more space.
+		 The tabular parsing technique has been extended and improved by Ford to produce what is called \emph{packrat parsing}\cite{ford2002packrat}. It essentially can be seen as a lazy  version of the tabular algorithm. Intermediate results are stored in a table, so we can lazily reuse them when backtracking. It makes top down parsing linear in time at the cost of using more space.
 	\end{block}
 \end{frame}

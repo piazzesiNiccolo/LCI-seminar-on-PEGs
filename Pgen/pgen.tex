@@ -13,8 +13,10 @@
 \begin{frame}[fragile]
 	\small
 	\frametitle{Python parser: an overview}
-	Despite technically being LL(1), the Python grammar have several rules that are not LL(1), requiring several workarounds to be used in the grammar and other parts of CPython.  
-
+	Despite technically being LL(1), the Python grammar has several rules that are not LL(1), requiring several workarounds to be used in the grammar and other parts of CPython.  
+		\begin{minted}{Python}
+  	namedexpr_test: test [':=' test]
+		\end{minted}
 		Sometimes the problem is not solvable with any workaround. As an example, no LL(1) rule can be made to support writing multiline parenthesized context managers:
 		\begin{minted}{Python}
 		with(
@@ -42,7 +44,7 @@ Since open parenthesis are in the first sets of grammar items that can appear as
 	The new proposed PEG parser is divided in three components:\begin{enumerate}
 		\item A parser generator. It reads  a grammar file and produces a PEG parser written in Python or C.
 		
-		\item A PEG meta-grammar that auto generates a Python parser used for the parser generator itself
+		\item A PEG meta-grammar that auto generates a Python parser used for the parser generator itself.
 		\item A generated parser that produces C and Python AST objects.
 	\end{enumerate} 
 \end{frame}
@@ -73,6 +75,15 @@ While the packrat parsing algorithm requires more space of the normal LL(1) pars
 It has been found that the new parser is slightly faster, but uses around 10\% more memory. 
 \end{frame}
 
+\begin{frame}
+\frametitle{Other libraries}\begin{itemize}
+		\item \href{https://github.com/pegjs/pegjs}{PegJS}
+		\vspace{20pt}
+		\item \href{https://github.com/taocpp/PEGTL}{PEGTL}
+		\vspace{20pt}
+		\item \href{https://github.com/kevinmehall/rust-peg}{Rust-peg}
+	\end{itemize}
+\end{frame}
 \begin{frame}[fragile]
 	\huge
 	
